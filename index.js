@@ -2,8 +2,9 @@
  * Activates typeahead behavior for given element.
  * @param element The DOM element to modify.
  * @param source The custom data source.
+ * @param onSelected Callback function to run when selected.
  */
-Meteor.typeahead = function(element, source) {
+Meteor.typeahead = function(element, source, onSelected) {
 	var $e = $(element);
 	var datasets = resolve_datasets($e, source);
 
@@ -19,6 +20,12 @@ Meteor.typeahead = function(element, source) {
 	// TODO support other classes if needed
 	if ($e.hasClass('form-control')) {
 		$e.parent('.twitter-typeahead').find('.tt-hint').addClass('form-control');
+	}
+	if (_.isFunction(onSelected)) {
+		$e.on('typeahead:selected', function (event, data) {
+			onSelected = _.bind(onSelected, data, 'hi');
+			onSelected();
+		});
 	}
 };
 
@@ -117,3 +124,4 @@ function wrap(dataset) {
 		templates: templates
 	};
 }
+
